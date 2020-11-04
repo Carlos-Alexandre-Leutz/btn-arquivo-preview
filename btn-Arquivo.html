@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="btn-arquivo.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+</head>
+
+<body>
+
+
+
+    <div id="btn-enviar-arquivo" class="button-effect">
+
+        <label for="files" class="effect effect-3">Documentos</label>
+    </div>
+    <input id="files" name="files[]" multiple style="display: none;" type="file">
+
+
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Arquivos</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+                </div>
+                <div class="modal-body">
+
+                    <output id="list"> Nenhum Arquivo enviado</output>
+                </div>
+                <div class="modal-footer">
+
+                    <button onclick="limpar()" class="btn btn-primary">Excluir Arquivos</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--
+
+        <a href="https://developer.mozilla.org/pt-BR/docs/DragDrop/Drag_and_Drop/Arrastar_e_soltar_arquivos"> arastar aqrquivo e soltar na tela </a>
+    -->
+
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
+    <script>
+        // Verifica se as APIs de arquivo são suportadas pelo navegador.
+        if (window.File && window.FileReader && window.FileList && window.Blob) {
+            // Todas as APIs são suportadas!
+        } else {
+            alert('A APIs de arquivos não é totalmente suportada neste navegador.');
+        }
+
+
+        function handleFileSelect(evt) {
+            var files = evt.target.files; // Objeto FileList guarda todos os arquivos.
+            var output = [];
+            //Intera sobre os arquivos e lista esses objetos no output.
+            for (var i = 0, f; f = files[i]; i++) {
+                //        console.log('Objeto do arquivo', f);
+                // Informação adicional se for imagem:
+                if (f.type.match('image.*')) {
+                    var reader = new FileReader();
+                    //A leitura do arquivo é assíncrona 
+                    reader.onload = (function(theFile) {
+                        return function(e) {
+                            //              console.log('Img info', e, theFile);
+                            // Gera a miniatura:
+                            var img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.title = escape(theFile.name);
+
+                            var span = document.createElement('span');
+                            //Obtém o tamanho:
+                            //Só é possível obter o tamanho do arquivo após o carregamento dele na miniatura, como o src é um base64 gerado à partir do arquivo local não terá custo de carregamento através da rede.
+                            img.onload = function() {
+                                var i = document.createElement('i');
+                                // i.innerHTML = "<br>Tamanho Miniatura: " + img.width + "px Largura - " + img.height + "px Altura <br> Tamanho original:" + img.naturalWidth + "px Largura - " + img.naturalWidth + "px Altura";
+                                span.appendChild(i);
+
+                                //Esse método retorna o tamanho calculado: Resultado esperado ((proporcional)x75) 
+
+                                //var width = img.clientWidth;
+                                //var height = img.clientHeight;
+                            }
+
+                            span.appendChild(img);
+                            document.getElementById('list').insertBefore(span, null);
+                        };
+                    })(f);
+
+                    // Read in the image file as a data URL.
+                    reader.readAsDataURL(f);
+                }
+
+                output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                    f.size, ' bytes,  última modificação: ',
+                    f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+                    '</li>');
+            }
+            document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+            document.getElementById('btn-enviar-arquivo').innerHTML = '<button data-toggle="modal" data-target="#exampleModal">Ver arquivos</button>'
+
+        }
+
+        document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+
+        function limpar() {
+            document.getElementById("files").value = "";
+            document.getElementById('list').innerHTML = '';
+            document.getElementById('btn-enviar-arquivo').innerHTML = '<label for="files" class="effect effect-3">Documentos</label>'
+
+        }
+    </script>
+
+</body>
+
+</html>
