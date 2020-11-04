@@ -89,4 +89,18 @@ body .button-effect :hover {
   border-radius: 6px;
   width: 200px;
 }
+
+#list {
+  width: 100%;
+  max-width: 100%;
+}
+
+#list span img {
+  height: 75px;
+  margin: 10px 5px 0 0;
+}
+
+#list ul li {
+  list-style: none;
+}
 /*# sourceMappingURL=btn-arquivo.css.map */
